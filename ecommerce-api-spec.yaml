@@ -1,0 +1,289 @@
+openapi: 3.0.0
+info:
+  title: E-commerce API
+  description: API for an e-commerce platform
+  version: 1.0.0
+servers:
+  - url: http://63.176.40.81:8000
+    description: Cloud server
+  - url: http://localhost:8000
+paths:
+  /products:
+    get:
+      summary: Fetch all products. --> Main Page
+      description: Get all products available in the database.
+      responses:
+        '200':
+          description: A list of products.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+    post:
+      summary: Add a new product with optional image upload. --> For Seller Page
+      description: Add a product with optional image upload.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '201':
+          description: Product added successfully.
+  /products/{product_id}:
+    get:
+      summary: Fetch a single product by ID. --> Single Product Page
+      description: Fetch a single product using its ID.
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Product details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Product not found.
+    put:
+      summary: Update a product. --> For Seller Page
+      description: Update product details using its ID.
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '200':
+          description: Product updated successfully.
+        '404':
+          description: Product not found.
+    delete:
+      summary: Delete a product. --> For Seller Page
+      description: Remove a product using its ID.
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Product deleted successfully.
+        '404':
+          description: Product not found.
+  /cart:
+    get:
+      summary: Fetch all cart items. --> On cart icon
+      description: Retrieve all items currently in the cart.
+      responses:
+        '200':
+          description: List of cart items.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CartItem'
+    post:
+      summary: update stock.--> On Add to cart Button
+      description: Add an item to the cart and update the stock.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product_id:
+                  type: integer
+                quantity:
+                  type: integer
+      responses:
+        '201':
+          description: Product added to cart.
+        '404':
+          description: Product not found.
+        '400':
+          description: Insufficient stock.
+  /cart/{cart_item_id}:
+    put:
+      summary: Update the quantity of a cart item and adjust the product stock. --> Extra
+      description: Update the quantity of a cart item and adjust the product stock.
+      parameters:
+        - name: cart_item_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: integer
+      responses:
+        '200':
+          description: Cart item updated.
+        '404':
+          description: Cart item or associated product not found.
+    delete:
+      summary: Remove a product from the cart and update stock.--> Button Clear All in Cart
+      description: Remove an item from the cart and restore the product stock.
+      parameters:
+        - name: cart_item_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Cart item removed.
+        '404':
+          description: Cart item not found.
+  /orders:
+    post:
+      summary: Adding Orders -> Checkout button
+      description: Checkout and create a new order.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+      responses:
+        '201':
+          description: Order created successfully.
+    get:
+      summary: Getting all Orders -> Done by Seller
+      description: Retrieve a list of all orders.
+      responses:
+        '200':
+          description: List of orders.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+  /orders/{order_id}:
+    get:
+      summary: Getting Orders by id -> Done by Seller
+      description: Fetch order details by ID.
+      parameters:
+        - name: order_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Order details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '404':
+          description: Order not found.
+    put:
+      summary: Order -> Extra
+      description: Update the status of an order.
+      parameters:
+        - name: order_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+      responses:
+        '200':
+          description: Order status updated.
+        '404':
+          description: Order not found.
+    delete:
+      summary: Deleting Order -> Done by Seller
+      description: Remove an order and restore the stock.
+      parameters:
+        - name: order_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Order deleted successfully.
+        '404':
+          description: Order not found.
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        price:
+          type: number
+        rating:
+          type: string
+        stock:
+          type: integer
+        details:
+          type: string
+        category:
+          type: string
+    CartItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        price:
+          type: number
+        quantity:
+          type: integer
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+        customer_name:
+          type: string
+        email:
+          type: string
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              quantity:
+                type: integer
+              price:
+                type: number
+        total:
+          type: number
+        status:
+          type: string

@@ -1,0 +1,4 @@
+tinydb
+flask
+flask_cors
+gunicorn
