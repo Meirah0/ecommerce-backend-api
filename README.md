@@ -1,4 +1,3 @@
-انسخي هذا كامل وحطيه بدل الـ README الموجود:
 
 # Ecommerce Backend API
 
@@ -146,4 +145,4 @@ Through this project, I strengthened my understanding of how backend systems are
 
 ## Project Type
 
-Backend Development Project
+Academic Ecommerce Backend API Project
